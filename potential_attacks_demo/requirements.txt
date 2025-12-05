@@ -1,0 +1,9 @@
+# Add any required packages here
+# For example:
+requests
+GitPython
+rich
+dotenv
+clickhouse-connect
+gh-fake-analyzer
+Flask

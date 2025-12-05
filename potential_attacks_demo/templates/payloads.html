@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payloads</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Payloads</h1>
+        <a href="/">Back to Home</a>
+        <a href="/actors">View Actors</a>
+        <div class="payloads-grid">
+            {% for actor_login, payloads in payloads_by_actor.items() %}
+            <div class="actor-payloads-card">
+                <h2>{{ actor_login }}</h2>
+                <ul>
+                    {% for payload in payloads %}
+                    <li>
+                        {% if payload.title %}
+                            <strong>Title:</strong> {{ payload.title }}
+                        {% endif %}
+                        {% if payload.payload_ref %}
+                            {% if payload.title %}<br>{% endif %}
+                            <strong>Ref/Head Ref:</strong> {{ payload.payload_ref }}
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

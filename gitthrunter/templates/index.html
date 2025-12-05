@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potential Attacks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold mb-4">Potential Attacks</h1>
+        <nav class="mb-4">
+            <a href="/actors" class="text-blue-500 hover:underline">View Actors</a> |
+            <a href="/payloads" class="text-blue-500 hover:underline">View Payloads</a>
+        </nav>
+
+        <div class="my-4">
+            <label for="toggleDeleteEvents" class="inline-flex items-center">
+                <input type="checkbox" id="toggleDeleteEvents" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <span class="ml-2">Hide DeleteEvent</span>
+            </label>
+        </div>
+
+        <div class="overflow-hidden">
+          <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table id="attacksTable" class="min-w-full divide-y-2 divide-gray-200 bg-white dark:bg-gray-800 text-sm">
+                <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">Created At</th>
+                        <th class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">Event Type</th>
+                        <th class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">Actor Login</th>
+                        <th class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">Repo Name</th>
+                        <th class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">Title</th>
+                        <th class="px-4 py-2 font-medium text-gray-900 dark:text-white text-left">Ref/Head Ref</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

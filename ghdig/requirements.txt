@@ -1,0 +1,4 @@
+rich
+GitPython
+clickhouse-connect
+gh-fake-analyzer

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case: {{ company_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #111827;
+            color: #fff;
+        }
+       html {
+           scroll-behavior: smooth;
+       }
+    </style>
+</head>
+<body class="p-8">
+    <div class="container mx-auto">
+        <a href="/demo" class="text-blue-400 hover:text-blue-300 mb-8 block">&larr; Back to Demo</a>
+        <h1 class="text-4xl font-bold mb-2">Case: {{ company_name }}</h1>
+
+        <div class="mt-8">
+            <!-- Tab Navigation -->
+            <div class="border-b border-gray-700">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <a href="#" id="tab-event-log" class="tab border-blue-500 text-blue-400 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="showTab('event-log')">
+                        Event Log
+                    </a>
+                    <a href="#" id="tab-actors" class="tab border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="showTab('actors')">
+                        Actors
+                    </a>
+                    <a href="#" id="tab-evidence" class="tab border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="showTab('evidence')">
+                        Evidence
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="content-event-log" class="tab-content pt-8">
+                <div class="flex flex-col">
+                    <!-- Header -->
+                    <div class="grid grid-cols-6 gap-4 p-4 font-bold border-b border-gray-700 bg-gray-800 rounded-t-lg">
+                        <div class="col-span-1">Created At</div>
+                        <div class="col-span-1">Actor Login</div>
+                        <div class="col-span-1">Event Type</div>
+                        <div class="col-span-1">Repo Name</div>
+                        <div class="col-span-2">Ref</div>
+                    </div>
+                    <!-- Rows -->
+                    {% for attack in attacks %}
+                    <div class="grid grid-cols-6 gap-4 p-4 border-b border-gray-800 hover:bg-gray-700">
+                        <div class="col-span-1">{{ attack.created_at }}</div>
+                        <div class="col-span-1">{{ attack.actor_login }}</div>
+                        <div class="col-span-1">{{ attack.event_type }}</div>
+                        <div class="col-span-1 break-words">{{ attack.repo_name }}</div>
+                        <div class="col-span-2 break-words">{{ attack.ref or attack.head_ref }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="content-actors" class="tab-content pt-8 hidden">
+                <div class="space-y-4">
+                    {% for group_key, group_data in actors.items() %}
+                    <div class="bg-gray-800 rounded-lg">
+                        <button class="w-full flex justify-between items-center text-left p-4" onclick="toggleAccordion('{{ loop.index }}')">
+                            <span class="font-medium">
+                                {% set primary_actor_enrichment = group_data.enrichment.get(group_data.primary_actor) %}
+                                <a href="https://github.com/{{ group_data.primary_actor }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                                    {{ primary_actor_enrichment.name or group_data.primary_actor }}
+                                </a>
+                                {% if primary_actor_enrichment.name and primary_actor_enrichment.name != group_data.primary_actor %}
+                                    <span class="text-gray-400">({{ group_data.primary_actor }})</span>
+                                {% endif %}
+                                {% if group_data.primary_actor in four_o_four_actors %}
+                                    <span class="text-red-500">(404)</span>
+                                {% endif %}
+                            </span>
+                            <svg id="arrow-{{ loop.index }}" class="w-5 h-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div id="details-{{ loop.index }}" class="hidden p-4 border-t border-gray-700 space-y-4">
+                            <div>
+                                {% if primary_actor_enrichment %}
+                                    <p><strong>Company:</strong> {{ primary_actor_enrichment.company or 'N/A' }}</p>
+                                    <p><strong>Location:</strong> {{ primary_actor_enrichment.location or 'N/A' }}</p>
+                                    <p><strong>Bio:</strong> {{ primary_actor_enrichment.bio or 'N/A' }}</p>
+                                {% else %}
+                                    <p>No enrichment data available for this primary actor.</p>
+                                {% endif %}
+                                <hr class="my-4 border-gray-600">
+                                <h4 class="font-bold text-lg text-amber-300">Aliases</h4>
+                                <div class="mt-2 space-y-3">
+                                    {% for alias in group_data.aliases %}
+                                        {% if alias != group_data.primary_actor %}
+                                        <div class="p-3 bg-gray-700 rounded-md">
+                                            {% set alias_enrichment = group_data.enrichment.get(alias) %}
+                                            <p class="font-semibold text-white">
+                                                {% if alias in four_o_four_actors %}
+                                                    {{ alias_enrichment.name or alias }}
+                                                    {% if alias_enrichment.name and alias_enrichment.name != alias %}
+                                                        <span class="text-gray-400">({{ alias }})</span>
+                                                    {% endif %}
+                                                    <span class="text-red-500">(404)</span>
+                                                {% else %}
+                                                    <a href="https://github.com/{{ alias }}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                                                        {{ alias_enrichment.name or alias }}
+                                                    </a>
+                                                    {% if alias_enrichment.name and alias_enrichment.name != alias %}
+                                                        <span class="text-gray-400">({{ alias }})</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </p>
+                                            {% if alias_enrichment %}
+                                                <p class="text-sm text-gray-400"><strong>Company:</strong> {{ alias_enrichment.company or 'N/A' }}</p>
+                                                <p class="text-sm text-gray-400"><strong>Location:</strong> {{ alias_enrichment.location or 'N/A' }}</p>
+                                                <p class="text-sm text-gray-400"><strong>Bio:</strong> {{ alias_enrichment.bio or 'N/A' }}</p>
+                                            {% else %}
+                                                <p class="text-sm text-gray-400">No enrichment data available for this alias.</p>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+           <div id="content-evidence" class="tab-content pt-8 hidden">
+               {% if case_id == 3 %}
+                   <div class="flex flex-col items-center space-y-8">
+                       <div id="evidence-pr">
+                           <h3 class="text-xl font-bold mb-2 text-center">1. The Malicious PR</h3>
+                           <img src="{{ url_for('static', filename='evidence/adyen/pr.png') }}" alt="Evidence PR" class="rounded-lg shadow-lg">
+                       </div>
+                       <a href="#evidence-exploit" class="text-4xl font-bold text-gray-500 hover:text-gray-300 transition-colors">&darr;</a>
+                       <div id="evidence-exploit">
+                           <h3 class="text-xl font-bold mb-2 text-center">2. The Exploit</h3>
+                           <img src="{{ url_for('static', filename='evidence/adyen/exploit.png') }}" alt="Evidence Exploit" class="rounded-lg shadow-lg">
+                       </div>
+                       <a href="#evidence-fix" class="text-4xl font-bold text-gray-500 hover:text-gray-300 transition-colors">&darr;</a>
+                       <div id="evidence-fix">
+                           <h3 class="text-xl font-bold mb-2 text-center">3. The Fix</h3>
+                           <img src="{{ url_for('static', filename='evidence/adyen/fix.png') }}" alt="Evidence Fix" class="rounded-lg shadow-lg">
+                       </div>
+                   </div>
+               {% else %}
+                   <p>No evidence available for this case.</p>
+               {% endif %}
+           </div>
+        </div>
+    </div>
+<script>
+    function showTab(tabName) {
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(function(tabContent) {
+            tabContent.classList.add('hidden');
+        });
+        // Deactivate all tabs
+        document.querySelectorAll('.tab').forEach(function(tab) {
+            tab.classList.remove('border-blue-500', 'text-blue-400');
+            tab.classList.add('border-transparent', 'text-gray-400', 'hover:text-gray-300', 'hover:border-gray-500');
+        });
+
+        // Show the selected tab content
+        document.getElementById('content-' + tabName).classList.remove('hidden');
+        // Activate the selected tab
+        const activeTab = document.getElementById('tab-' + tabName);
+        activeTab.classList.add('border-blue-500', 'text-blue-400');
+        activeTab.classList.remove('border-transparent', 'text-gray-400', 'hover:text-gray-300', 'hover:border-gray-500');
+    }
+
+    function toggleAccordion(actorLogin) {
+        const details = document.getElementById('details-' + actorLogin);
+        const arrow = document.getElementById('arrow-' + actorLogin);
+        details.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+    }
+</script>
+</body>
+</html>

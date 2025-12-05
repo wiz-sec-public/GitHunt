@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Editor
+.vscode/
+.idea/
+
+# Environment variables
+.env
+
+# Outputs / artifacts
+ghdig/outputs/
+script.log
+monitoring.log
+github_cache.db
+target_list/

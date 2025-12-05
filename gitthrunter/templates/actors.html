@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold mb-4">Actors</h1>
+        <a href="/" class="text-blue-500 hover:underline mb-4 inline-block">Back to Home</a>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for actor_login, data in actors.items() %}
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <h2 class="text-xl font-bold mb-2">
+                {% if actor_login in four_o_four_actors %}
+                    {{ actor_login }}
+                    <span class="text-red-500">(404 Not Found)</span>
+                {% else %}
+                    <a href="https://github.com/{{ actor_login }}" target="_blank" class="text-blue-500 hover:underline">{{ actor_login }}</a>
+                {% endif %}
+            </h2>
+            <pre class="bg-gray-100 dark:bg-gray-700 p-2 rounded-md overflow-x-auto text-sm">{{ data.latest_enricher_result | tojson(indent=2) }}</pre>
+
+            <ul class="mt-4">
+                {% for event_type, count in data.event_counts.items() %}
+                {% if event_type != 'DeleteEvent' %}
+                <li>{{ event_type }}: {{ count }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+
+            <h3 class="text-lg font-semibold mt-4">Repositories:</h3>
+            <ul>
+                {% for repo in data.repos %}
+                <li><a href="https://github.com/{{ repo }}" class="text-blue-500 hover:underline">{{ repo }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

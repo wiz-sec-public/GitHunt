@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actors</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Actors</h1>
+        <a href="/">Back to Home</a>
+        <div class="actor-grid">
+        {% for actor_login, data in actors.items() %}
+        <div class="actor-card">
+            <h2>
+                {% if actor_login in four_o_four_actors %}
+                    {{ actor_login }}
+                    <span class="four-o-four">(404 Not Found)</span>
+                {% else %}
+                    <a href="https://github.com/{{ actor_login }}" target="_blank">{{ actor_login }}</a>
+                {% endif %}
+            </h2>
+            <pre>{{ data.latest_enricher_result | tojson(indent=2) }}</pre>
+
+            <ul>
+                {% for event_type, count in data.event_counts.items() %}
+                {% if event_type != 'DeleteEvent' %}
+                <li>{{ event_type }}: {{ count }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+
+            <h3>Repositories:</h3>
+            <ul>
+                {% for repo in data.repos %}
+                <li><a href="https://github.com/{{ repo }}">{{ repo }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
