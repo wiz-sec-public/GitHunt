@@ -21,3 +21,8 @@ script.log
 monitoring.log
 github_cache.db
 target_list/
+# Local artifacts
+.DS_Store
+gitthrunter/outputs/
+gitthrunter/query_results.db
+trivy/

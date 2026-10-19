@@ -4,9 +4,25 @@ API Enricher for GitHub Actor Data
 
 import os
 import requests
+from pathlib import Path
 
-# Placeholder for GitHub API base URL
 GITHUB_API_BASE_URL = "https://api.github.com"
+
+def _load_github_token():
+    """Load GITHUB_TOKEN from environment or .env file."""
+    token = os.getenv("GITHUB_TOKEN")
+    if token:
+        return token
+
+    # Try loading from .env in current directory or parent
+    for env_path in [Path(".env"), Path("../.env"), Path("../ghdig/.env")]:
+        if env_path.exists():
+            with open(env_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GITHUB_TOKEN="):
+                        return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return None
 
 def get_github_user_data(username: str) -> tuple[dict | None, int]:
     """
@@ -14,7 +30,7 @@ def get_github_user_data(username: str) -> tuple[dict | None, int]:
     Returns a tuple of (user_data, status_code).
     """
     headers = {}
-    github_token = os.getenv("GITHUB_TOKEN")
+    github_token = _load_github_token()
     if github_token:
         headers["Authorization"] = f"token {github_token}"
 
