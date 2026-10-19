@@ -98,13 +98,6 @@ AND body LIKE '%SYSTEM OVERRIDE%'
 AND created_at > '2026-01-01'
 
 -- hackerbot-claw CLAUDE.md injection (Feb 2026)
--- Search for modifications to CLAUDE.md files
-SELECT * FROM github_events
-WHERE event_type = 'PushEvent'
-AND (
-    ref LIKE '%CLAUDE.md%' OR
-    ref LIKE '%cursorrules%' OR
-    ref LIKE '%copilot-instructions%'
-)
-AND actor_login NOT IN (repo owner patterns)
+-- Not detectable here: github_events has no changed-file paths (ref is the
+-- branch name), so CLAUDE.md / .cursorrules edits need the GitHub API instead.
 */
